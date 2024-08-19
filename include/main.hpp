@@ -6,9 +6,8 @@
 #define TRACK_WIDTH 100.0f
 #define CONE_SPACING 100.0f
 
-enum SegmentType {
-    STRAIGHT, CIRCLE, BEZIER
-};
+// scaling
+#define PIXEL_TO_M 0.01f
 
 class TrackPoint {
     public:
@@ -16,6 +15,9 @@ class TrackPoint {
         
         int xPos;
         int yPos;
+
+        double dX;
+        double dY;
 
         sf::CircleShape shape;
 
@@ -25,12 +27,14 @@ class TrackPoint {
 
 class ConePair {
     public:
-        ConePair(int leftX, int leftY, int rightX, int rightY);
+        ConePair(int leftX, int leftY, int rightX, int rightY, bool BigOrange);
 
         int LeftXPos;
         int LeftYPos;
         int RightXPos;
         int RightYPos;
+
+        bool isOrange;
 
         sf::CircleShape leftConeShape;
         sf::CircleShape rightConeShape;
@@ -38,35 +42,27 @@ class ConePair {
         void Draw(sf::RenderWindow &window);
 };
 
-class TrackSegment {
-    public:
-        TrackSegment(int x1, int y1, int x2, int y2, double prevdX, double prevdY, SegmentType tool);
-
-        int startX;
-        int startY;
-        int endX;
-        int endY;
-
-        double startdX = 0;
-        double startdY = 0;
-
-        std::vector<ConePair> conePairs;
-
-        SegmentType segmentType;
-
-        void PopulateStraightTrack();
-        void PopulateCircleTrack(sf::RenderWindow &window);
-
-        void Draw(sf::RenderWindow &window);
-};
-
 class Track {
     public:
-        std::vector<TrackPoint> trackPoints;
-        std::vector<TrackSegment> trackSegs;
+        Track(int tL);
 
-        void AddTrackPoint(int x, int y, SegmentType tool, bool preview, sf::RenderWindow &window);
+        std::vector<TrackPoint> trackPoints;
+        std::vector<ConePair> conePairs;
+
+        int carStartX = 0;
+        int carStartY = 0;
+        double carStartDir = 0;
+
+        bool hasOrange;
+
+        double currdX;
+        double currdY;
+
+        double trackLength;
+
+        void AddTrackPoint(int x, int y, bool preview, sf::RenderWindow &window);
 
         void Draw(sf::RenderWindow &window);
 
+        void outputToCSV (std::string& filePath);
 };
